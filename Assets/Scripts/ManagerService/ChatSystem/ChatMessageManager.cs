@@ -14,17 +14,21 @@ namespace ManagerService.ChatSystem
         [Range(3, 14)][SerializeField] private int maximumMessages = 12;
         
         private PhotonView _photonView;
-        private List<string> _messages = new List<string>();
+        private readonly List<string> _messages = new List<string>();
         private float _buildDelay = 0.0f;
 
         private void Start() => _photonView = GetComponent<PhotonView>();
 
-        private void Update() => UpdateChat();
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Return)) SubmitMessageChat();
+            UpdateChat();
+        }
 
         [PunRPC]
         private void AddMessageRPC(string message) => _messages.Add(message);
 
-        public void SendMessageChat(string message)
+        private void SendMessageChat(string message)
         {
             var newMessage = $"{PhotonNetwork.NickName}: {message}";
             _photonView.RPC("AddMessageRPC", RpcTarget.All, newMessage);

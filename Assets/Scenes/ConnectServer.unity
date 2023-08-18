@@ -1194,8 +1194,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1866727823}
   - component: {fileID: 1866727824}
+  - component: {fileID: 1866727825}
   m_Layer: 0
-  m_Name: Manager
+  m_Name: ConnectManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1230,8 +1231,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   usernameInputField: {fileID: 1481039040}
   buttonText: {fileID: 539104294}
-  connectButton: {fileID: 1009042432}
   sceneName: Lobby
+--- !u!114 &1866727825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1866727822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 742bf39cec9e3774ea683c6f8a385c27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1991402687
 GameObject:
   m_ObjectHideFlags: 0

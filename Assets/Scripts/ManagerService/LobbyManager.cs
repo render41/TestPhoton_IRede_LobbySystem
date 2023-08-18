@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
+using Settings;
 using TMPro;
 using UnityEngine;
 
@@ -12,71 +12,63 @@ namespace ManagerService
         [SerializeField] private TMP_Text usernameTextTMP;
         [SerializeField] private TMP_InputField roomInputFieldTMP;
         [SerializeField] private TMP_Text roomNameTextTMP;
-        
-        [Header("Room Settings")]
-        [SerializeField] private RoomItem roomItemPrefab;
-        [SerializeField] private Transform contentObjects;
-        [SerializeField] private float timeBetweenUpdates = 1.5f;
-        private readonly List<RoomItem> _roomItemsList = new List<RoomItem>();
-        private float _nextUpdateTime;
 
         [Header("Panels")]
         [SerializeField] private GameObject lobbyPanel;
         [SerializeField] private GameObject roomPanel;
+        [SerializeField] private GameObject panels;
+
+        private PanelManager _panelManager;
 
         #region Mono
+
+        private void Awake()
+        {
+            _panelManager = panels.AddComponent<PanelManager>();
+            PhotonNetwork.JoinLobby();
+        }
+
         private void Start()
         {
-            PhotonNetwork.JoinLobby();
+            PhotonNetwork.AutomaticallySyncScene = true;
             usernameTextTMP.text = $"Welcome, {PhotonNetwork.NickName}";
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Return)) OnClickCreateRoom();
         }
 
         #endregion
 
         public override void OnConnectedToMaster() => PhotonNetwork.JoinLobby();
-        
-        public void OnClickCreateRoom()
-        {
-            if (roomInputFieldTMP.text.Length < 1) return;
-            PhotonNetwork.CreateRoom(roomInputFieldTMP.text, new RoomOptions() { MaxPlayers = 4 });
-            PhotonNetwork.AutomaticallySyncScene = true;
-        }
 
         public override void OnJoinedRoom()
         {
-            lobbyPanel.SetActive(false);
-            roomPanel.SetActive(true);
+            _panelManager.SetActivePanels(roomPanel, lobbyPanel);
             roomNameTextTMP.text = $"Room: {PhotonNetwork.CurrentRoom.Name}";
         }
-
-        public override void OnRoomListUpdate(List<RoomInfo> roomList)
+        public override void OnLeftRoom()
         {
-            if (!(Time.time >= _nextUpdateTime)) return;
-            UpdateRoomList(roomList);
-            _nextUpdateTime = Time.time + timeBetweenUpdates;
-        }
-
-        private void UpdateRoomList(List<RoomInfo> roomInfoList)
-        {
-            foreach (var item in _roomItemsList) Destroy(item.gameObject);
-            _roomItemsList.Clear();
-            
-            foreach (var room in roomInfoList)
-            {
-                var newRoom = Instantiate(roomItemPrefab, contentObjects);
-                newRoom.SetRoomName(room.Name);
-                _roomItemsList.Add(newRoom);
-            }
+            _panelManager.SetActivePanels(lobbyPanel, roomPanel);
         }
 
         public void JoinRoom(string roomName) => PhotonNetwork.JoinRoom(roomName);
 
-        public void OnClickLeaveRoom() => PhotonNetwork.LeaveRoom();
-
-        public override void OnLeftRoom()
+        public void OnClickCreateRoom()
         {
-            roomPanel.SetActive(false);
-            lobbyPanel.SetActive(true);
+            if (roomInputFieldTMP.text.Length < 1 && !PhotonNetwork.IsConnected) return;
+            var roomOptions = new RoomOptions
+            {
+                MaxPlayers = 3
+            };
+            PhotonNetwork.JoinOrCreateRoom(roomInputFieldTMP.text, roomOptions, TypedLobby.Default);
+            roomInputFieldTMP.text = "";
+        }
+        
+        public void OnClickLeaveRoom()
+        {
+            PhotonNetwork.LeaveRoom();
         }
     }
 }
