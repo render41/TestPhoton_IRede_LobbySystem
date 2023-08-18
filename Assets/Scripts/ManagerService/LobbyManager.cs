@@ -25,13 +25,13 @@ namespace ManagerService
         private void Awake()
         {
             _panelManager = panels.AddComponent<PanelManager>();
-            PhotonNetwork.JoinLobby();
+            PhotonNetwork.AutomaticallySyncScene = true;
         }
 
         private void Start()
         {
-            PhotonNetwork.AutomaticallySyncScene = true;
             usernameTextTMP.text = $"Welcome, {PhotonNetwork.NickName}";
+            PhotonNetwork.JoinLobby();
         }
 
         private void Update()
@@ -41,7 +41,10 @@ namespace ManagerService
 
         #endregion
 
-        public override void OnConnectedToMaster() => PhotonNetwork.JoinLobby();
+        public override void OnConnectedToMaster()
+        {
+            PhotonNetwork.JoinLobby();
+        }
 
         public override void OnJoinedRoom()
         {

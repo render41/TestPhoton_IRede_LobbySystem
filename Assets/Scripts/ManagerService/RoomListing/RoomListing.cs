@@ -17,28 +17,23 @@ namespace ManagerService.RoomListing
 
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
         {
-            if (Time.time >= _nextUpdateTime)
+            if (Time.time >= _timeBetweenUpdates)
             {
+                ClearRoomItems();
                 foreach (var room in roomList)
                 {
-                    if (room.RemovedFromList)
-                        ClearRoomItems(room);
-                    else
-                        AddRooms(room);
+                    AddRooms(room);
                 }
 
                 _nextUpdateTime = Time.time + _timeBetweenUpdates;
             }
-
         }
 
-        private void ClearRoomItems(RoomInfo room)
+        private void ClearRoomItems()
         {
-            var index = _roomItemsList.FindIndex(x => x.RoomInfo.Name == room.Name);
-            if (index != -1)
+            foreach (var item in _roomItemsList)
             {
-                Destroy(_roomItemsList[index].gameObject);
-                _roomItemsList.RemoveAt(index);
+                Destroy(item.gameObject);
             }
             _roomItemsList.Clear();
         }
@@ -46,7 +41,6 @@ namespace ManagerService.RoomListing
         private void AddRooms(RoomInfo room)
         {
             var newRoom = Instantiate(roomItemPrefab, content);
-            if (newRoom == null) return;
             newRoom.SetRoomName(room);
             _roomItemsList.Add(newRoom);
         }
