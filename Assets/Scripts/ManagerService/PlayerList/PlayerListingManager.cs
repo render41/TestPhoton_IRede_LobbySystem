@@ -22,7 +22,15 @@ namespace ManagerService.PlayerList
             }
         }
 
-        public override void OnPlayerEnteredRoom(Player newPlayer) => AddPLayerList(newPlayer);
+        public override void OnPlayerEnteredRoom(Player newPlayer)
+        {
+            AddPLayerList(newPlayer);
+        }
+
+        public override void OnPlayerLeftRoom(Player otherPlayer)
+        {
+            RemovePlayer(otherPlayer);
+        }
 
         private void AddPLayerList(Player player)
         {
@@ -31,11 +39,11 @@ namespace ManagerService.PlayerList
             listingItem.SetPlayerInfo(player);
             _listingItem.Add(listingItem);
         }
-        
-        public override void OnPlayerLeftRoom(Player otherPlayer)
+
+        private void RemovePlayer(Player otherPlayer)
         {
             var index = _listingItem.FindIndex(x => Equals(x.Player, otherPlayer));
-            if (index == -1) return;
+            if (index == 1) return;
             Destroy(_listingItem[index].gameObject);
             _listingItem.RemoveAt(index);
         }

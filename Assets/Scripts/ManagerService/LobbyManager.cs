@@ -63,7 +63,7 @@ namespace ManagerService
             if (roomInputFieldTMP.text.Length < 1 && !PhotonNetwork.IsConnected) return;
             var roomOptions = new RoomOptions
             {
-                MaxPlayers = 3
+                MaxPlayers = 2
             };
             PhotonNetwork.JoinOrCreateRoom(roomInputFieldTMP.text, roomOptions, TypedLobby.Default);
             roomInputFieldTMP.text = "";

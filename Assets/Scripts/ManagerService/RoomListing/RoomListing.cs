@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace ManagerService.RoomListing
         [SerializeField] private RoomItemList roomItemPrefab;
 
         private readonly List<RoomItemList> _roomItemsList = new List<RoomItemList>();
-        private float _timeBetweenUpdates = 1.5f;
+        private readonly float _timeBetweenUpdates = 1.5f;
         private float _nextUpdateTime;
         
 
@@ -26,6 +27,11 @@ namespace ManagerService.RoomListing
                 }
 
                 _nextUpdateTime = Time.time + _timeBetweenUpdates;
+            }
+
+            foreach (var room in roomList.Where(room => room.PlayerCount <= 0))
+            {
+                ClearRoomItems();
             }
         }
 
